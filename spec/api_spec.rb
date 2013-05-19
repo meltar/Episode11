@@ -42,6 +42,9 @@ describe LogRequest do
   it "should keep the time" do
     subject.time.should be_within(0.01).of(45.minutes.ago)
   end
+  it "should know how long it took to execute the request" do
+    subject.execution_time.should eq(0)
+  end
 
   describe ":log" do
     before do

@@ -8,11 +8,12 @@ require "active_support/all"
 Rabl.register!
 
 class LogRequest
-  attr_reader :text, :time, :created_at
+  attr_reader :text, :time, :created_at, :execution_time
   def initialize(time, text)
     @text = text
-    @time = time
+    @time = time 
     @created_at = Time.now
+    @execution_time = @created_at - @time
   end
 
   @@log = []
@@ -30,7 +31,7 @@ class LogRequest
 
 end
 
-LogRequest.log_request Time.now, "Just do it alreay"
+LogRequest.log_request Time.now, "Just do it already"
 
 get '/' do
   @logs = LogRequest.log
