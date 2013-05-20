@@ -13,7 +13,7 @@ describe "The Api" do
 
   before do
     LogRequest.clear_log!
-    LogRequest.log_request(6.seconds.ago.utc, "Hello World")
+    LogRequest.log_request(6.seconds.ago.utc, "Hello World", 11.hours)
   end
 
   it "should return json array of log request" do
@@ -23,6 +23,9 @@ describe "The Api" do
     log_request.fetch("text").should eq("Hello World")
     time_in_utc = Time.parse(log_request.fetch("time"))
     time_in_utc.should be_within(1).of(6.seconds.ago.utc)
+    puts log_request
+    exec_time = log_request.fetch("execution_time")
+    exec_time.should be_within(1).of(11.hours)
   end
 
   it "not be ok with /wack" do
@@ -34,7 +37,7 @@ end
 
 describe LogRequest do
 
-  let(:subject) { LogRequest.new(45.minutes.ago, "Just Record it")}
+  let(:subject) { LogRequest.new(45.minutes.ago, "Just Record it", 5.seconds)}
 
   it "should have the text" do
     subject.text.should eq("Just Record it")
@@ -42,15 +45,15 @@ describe LogRequest do
   it "should keep the time" do
     subject.time.should be_within(0.01).of(45.minutes.ago)
   end
-  it "should know how long it took to execute the request" do
-    subject.execution_time.should eq(0)
+  it "should know how long it took to execute" do
+    subject.execution_time.should be_within(0.01).of(5.seconds)
   end
 
   describe ":log" do
     before do
       LogRequest.clear_log!
-      LogRequest.log_request(Time.now, "Now")
-      LogRequest.log_request(Time.now, "Now")
+      LogRequest.log_request(Time.now, "Now", 3.minutes)
+      LogRequest.log_request(Time.now, "Now", 3.minutes)
     end
     it "should be an array-like thing" do
       LogRequest.log.count.should eq(2)
