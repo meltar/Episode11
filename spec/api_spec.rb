@@ -23,9 +23,18 @@ describe "The Api" do
     log_request.fetch("text").should eq("Hello World")
     time_in_utc = Time.parse(log_request.fetch("time"))
     time_in_utc.should be_within(1).of(6.seconds.ago.utc)
-    puts log_request
     exec_time = log_request.fetch("execution_time")
     exec_time.should be_within(1).of(11.hours)
+  end
+
+  it "should be able to post a log" do
+    get "/"
+    json = JSON.parse(last_response.body)
+    count = json.count
+    post("/", { time: Time.now, msg: 'Posted request', exec_time: 3.minutes })
+    json = JSON.parse(last_response.body)
+    total = json.count
+    total.should equal(count + 1)
   end
 
   it "not be ok with /wack" do

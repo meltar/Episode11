@@ -37,3 +37,9 @@ get '/' do
   @logs = LogRequest.log
   render :rabl, :logs, :format => "json"
 end
+
+post '/' do
+  LogRequest.log_request params.fetch("time"), params.fetch("msg"), params.fetch("exec_time")
+  @logs = LogRequest.log
+  render :rabl, :logs, :format => "json"
+end
