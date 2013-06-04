@@ -1,3 +1,3 @@
 collection @logs
 
-attributes :time, :text, :execution_time
+attributes :user, :time, :text, :execution_time, :user

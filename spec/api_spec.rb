@@ -14,8 +14,9 @@ describe "The Api" do
   before do
     LogRequest.clear_log!
     LogRequest.log_request(6.seconds.ago.utc, "Hello World", 11.hours)
+    LogRequest.log_request(10.minutes.ago.utc, "User specific", 15.minutes, "951")
   end
-
+  
   it "should return json array of log request" do
     get "/"
     json = JSON.parse(last_response.body)
@@ -27,17 +28,23 @@ describe "The Api" do
     exec_time.should be_within(1).of(11.hours)
   end
 
+  it "should only return logs for a provided user id" do
+    get("/?user=951")
+    json = JSON.parse(last_response.body)
+    json.count.should eq(1)
+  end
+
   it "should be able to post a log" do
     get "/"
     json = JSON.parse(last_response.body)
     count = json.count
-    post("/", { time: Time.now, msg: 'Posted request', exec_time: 3.minutes })
+    post("/", { time: Time.now, msg: 'Posted request', exec_time: 3.minutes, user: "150" })
     json = JSON.parse(last_response.body)
     total = json.count
     total.should equal(count + 1)
   end
 
-  it "not be ok with /wack" do
+  it "should not be ok with /wack" do
     get "/wack"
     last_response.should_not be_ok
   end
@@ -46,7 +53,7 @@ end
 
 describe LogRequest do
 
-  let(:subject) { LogRequest.new(45.minutes.ago, "Just Record it", 5.seconds)}
+  let(:subject) { LogRequest.new(45.minutes.ago, "Just Record it", 5.seconds, "811")}
 
   it "should have the text" do
     subject.text.should eq("Just Record it")
@@ -61,8 +68,8 @@ describe LogRequest do
   describe ":log" do
     before do
       LogRequest.clear_log!
-      LogRequest.log_request(Time.now, "Now", 3.minutes)
-      LogRequest.log_request(Time.now, "Now", 3.minutes)
+      LogRequest.log_request(Time.now, "Now", 3.minutes, "500")
+      LogRequest.log_request(Time.now, "Now", 3.minutes, "500")
     end
     it "should be an array-like thing" do
       LogRequest.log.count.should eq(2)
@@ -78,3 +85,4 @@ describe LogRequest do
 
   end
 end
+
