@@ -43,6 +43,13 @@ describe "The Api" do
     total = json.count
     total.should equal(count + 1)
   end
+  
+  it "should return a 401 error when a put request does not contain a user id" do
+    post("/", { time: Time.now, msg: 'put request with user', exec_time: 35.seconds, user: "12" })
+    last_response.should be_ok
+    post("/", { time: 48.seconds.ago, msg: 'put request without user', exec_time: 2.minutes })
+    last_response.status.should eq(401)
+  end
 
   it "should not be ok with /wack" do
     get "/wack"
