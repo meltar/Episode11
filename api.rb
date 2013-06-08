@@ -51,7 +51,7 @@ end
 LogRequest.log_request(Time.now, "Just do it already", 5.minutes, "1011")
 
 get '/' do
-  if !params.fetch("user", nil).nil?
+  if params["user"]
     @logs = LogRequest.log_per_user(params.fetch("user"))
   else
     @logs = LogRequest.log
